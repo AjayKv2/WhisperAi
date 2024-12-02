@@ -1,0 +1,6 @@
+streamlit
+whisper
+pydub
+jiwer
+torch
+torchaudio
