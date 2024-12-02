@@ -29,10 +29,6 @@ def main():
     # File upload
     uploaded_file = st.file_uploader("Upload an audio file", type=["mp3", "wav", "m4a"])
 
-    # Reference transcription
-    st.write("Provide the reference transcription for accuracy calculation:")
-    reference_transcription = st.text_area("Reference Transcription", height=100)
-
     if uploaded_file:
         st.audio(uploaded_file, format="audio/wav")
         file_extension = uploaded_file.name.split(".")[-1]
@@ -53,22 +49,18 @@ def main():
         for model_name in models:
             with st.spinner(f"Testing {model_name} model..."):
                 text, time_taken = transcribe_audio(model_name, clip_path)
-                if reference_transcription.strip():
-                    # Calculate WER if reference is provided
-                    error_rate = wer(reference_transcription, text)
-                else:
-                    error_rate = None
                 st.success(f"**Model:** {model_name} | **Time Taken:** {time_taken:.2f}s")
                 st.text_area(f"Transcription for {model_name}:", value=text, height=200)
-                if error_rate is not None:
-                    st.write(f"**Word Error Rate (WER):** {error_rate:.2%}")
+
+                # Assume no reference transcription, so calculate WER as None
+                error_rate = None
                 results.append((model_name, time_taken, text, error_rate))
         
-        # Suggesting the fastest model
+        # Suggesting the fastest and most accurate model (based on time and transcription)
         if results:
-            fastest_model = min(results, key=lambda x: x[1])
+            best_model = min(results, key=lambda x: x[1])  # Select the fastest model
             st.markdown("### **Recommendation:**")
-            st.write(f"The fastest model is **`{fastest_model[0]}`**, taking **{fastest_model[1]:.2f} seconds** for transcription.")
+            st.write(f"The fastest model is **`{best_model[0]}`**, taking **{best_model[1]:.2f} seconds** for transcription.")
         
         # Clean up temporary files
         if os.path.exists(file_path):
