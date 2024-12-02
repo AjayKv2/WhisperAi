@@ -1,6 +1,7 @@
 streamlit
-whisper
+openai-whisper
 pydub
 jiwer
 torch
 torchaudio
+ffmpeg-python
